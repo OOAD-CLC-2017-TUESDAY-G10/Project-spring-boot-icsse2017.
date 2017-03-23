@@ -41,7 +41,7 @@ public class FileUploadController {
                                 .build().toString())
                 .collect(Collectors.toList()));
 
-        return "jsp/test";
+        return "jsp/index";
         //return "thymeleaf/uploadForm";
     }
 
