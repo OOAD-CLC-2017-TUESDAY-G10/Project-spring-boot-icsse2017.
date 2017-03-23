@@ -1,5 +1,8 @@
 package hello;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRegistration;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,7 +10,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-
+import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import hello.storage.StorageProperties;
 import hello.storage.StorageService;
@@ -15,8 +19,9 @@ import hello.storage.StorageService;
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 public class Application extends SpringBootServletInitializer {
-
+	static String RESOURCES;
 	public static void main(String[] args) {
+		RESOURCES = "/resources/";
 		SpringApplication.run(Application.class, args);
 	}
 	 @Override
@@ -30,5 +35,15 @@ public class Application extends SpringBootServletInitializer {
 			storageService.init();
 		};
 	}
+	@Override
+    public void onStartup(ServletContext container) {
+      XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+      appContext.setConfigLocation("/WEB-INF/spring-web-config.xml");
+
+      ServletRegistration.Dynamic dispatcher =
+        container.addServlet("dispatcher", new DispatcherServlet(appContext));
+      dispatcher.setLoadOnStartup(1);
+      dispatcher.addMapping("/");
+    }
 
 }
